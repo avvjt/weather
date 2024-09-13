@@ -1,51 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/weather_news_provider.dart';
+import 'package:weather_app/sections/news.dart';
+import 'package:weather_app/sections/weather.dart';
+import 'package:weather_app/widget/drawer_widget.dart';
+import '../providers/news_provider.dart'; // Import your provider if needed
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _showWeather = true;
+
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<WeatherNewsProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Weather & News Aggregator'),
+        title: const Text('Weather and News'),
+        actions: [
+          Switch(
+            value: _showWeather,
+            onChanged: (value) {
+              setState(() {
+                _showWeather = value;
+              });
+            },
+          ),
+        ],
       ),
-      body: provider.weather == null
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Text('Current Weather: ${provider.weather!.description}'),
-                Text('Temperature: ${provider.weather!.temperature}°C'),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: provider.newsArticles?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      final article = provider.newsArticles![index];
-                      return ListTile(
-                        title: Text(article.title),
-                        subtitle: Text(article.description),
-                        onTap: () => _launchURL(article.url),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.refresh),
-        onPressed: () {
-          provider.fetchWeatherAndNews('New York'); // Replace with actual user location
-        },
-      ),
+      drawer: const AppDrawer(),
+      body: _showWeather ? const WeatherComponent() : const NewsComponent(),
     );
-  }
-
-  void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 }

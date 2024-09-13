@@ -1,2 +1,3 @@
 const String WEATHER_API_KEY = '38938ec7d2b0db333069425ac5710590';
+
 const String NEWS_API_KEY = '3d4a4ff7084b489590c490ec4f761df5';
